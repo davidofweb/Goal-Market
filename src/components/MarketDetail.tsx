@@ -127,54 +127,50 @@ export default function MarketDetail({ match, markets, user, onBack, onTrade }: 
   );
 
   return (
-    <div className="space-y-6 animate-fade-in" id="market-detail-view">
+    <div className="space-y-8 animate-fade-in" id="market-detail-view">
       
-      {/* Detail Header & Action Row */}
-      <button
-        onClick={onBack}
-        className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-400 hover:text-white transition-colors cursor-pointer group"
-      >
-        <ChevronLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
-        <span>Back to Matches</span>
-      </button>
+      {/* 1. Back button & Flat Team Header (Continuous, no isolated card) */}
+      <div className="border-b border-zinc-900 pb-6 space-y-4">
+        <button
+          onClick={onBack}
+          className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-400 hover:text-white transition-colors cursor-pointer group"
+        >
+          <ChevronLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+          <span>Back to fixtures</span>
+        </button>
 
-      {/* Match Matchup Headline Banner */}
-      <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6 relative overflow-hidden shadow-xl">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-950/10 via-transparent to-transparent" />
-        
-        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-          <div className="flex items-center gap-5">
-            <div className="flex -space-x-4 items-center">
-              <span className="text-4xl filter drop-shadow bg-zinc-900 w-14 h-14 rounded-full flex items-center justify-center border border-zinc-800">{match.homeFlag}</span>
-              <span className="text-4xl filter drop-shadow bg-zinc-900 w-14 h-14 rounded-full flex items-center justify-center border border-zinc-800">{match.awayFlag}</span>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pt-2">
+          <div className="flex items-center gap-4">
+            <div className="flex -space-x-3 items-center">
+              <span className="text-3xl filter drop-shadow w-11 h-11 bg-zinc-950 rounded-full flex items-center justify-center border border-zinc-900 select-none">{match.homeFlag}</span>
+              <span className="text-3xl filter drop-shadow w-11 h-11 bg-zinc-950 rounded-full flex items-center justify-center border border-zinc-900 select-none">{match.awayFlag}</span>
             </div>
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-xs bg-zinc-900 border border-zinc-800 px-2 py-0.5 rounded-md font-semibold text-zinc-400 uppercase tracking-widest">{match.group}</span>
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] bg-zinc-950 border border-zinc-900 px-2 py-0.5 rounded-md font-black text-zinc-400 uppercase tracking-widest">{match.group}</span>
                 {match.status === 'LIVE' && (
-                  <span className="text-xs bg-red-500/10 text-red-400 px-2 py-0.5 rounded-md font-bold uppercase tracking-wider animate-pulse flex items-center gap-1">
-                    <span className="inline-block w-1.5 h-1.5 bg-red-500 rounded-full"></span>
-                    <span>Live • {match.minute}'</span>
+                  <span className="text-[9px] bg-red-500/10 text-red-400 border border-red-500/25 px-2 py-0.5 rounded-md font-bold uppercase tracking-wider animate-pulse">
+                    LIVE • {match.minute}'
                   </span>
                 )}
                 {match.status === 'COMPLETED' && (
-                  <span className="text-xs bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded-md font-bold uppercase tracking-wider">Resolved</span>
+                  <span className="text-[9px] bg-zinc-900 text-zinc-500 px-2 py-0.5 rounded-md font-bold uppercase tracking-wider">RESOLVED</span>
                 )}
               </div>
               <h2 className="text-2xl font-black text-white tracking-tight">{match.homeTeam} vs {match.awayTeam}</h2>
             </div>
           </div>
 
-          <div className="flex items-center gap-6">
+          <div className="shrink-0">
             {match.status !== 'UPCOMING' ? (
-              <div className="text-center bg-zinc-900/40 border border-zinc-800/80 px-5 py-3 rounded-2xl">
-                <span className="text-[10px] text-zinc-500 uppercase font-semibold block mb-0.5">Score</span>
-                <span className="text-3xl font-black text-white">{match.homeScore} - {match.awayScore}</span>
+              <div className="text-left sm:text-right">
+                <span className="text-[9px] text-zinc-500 uppercase font-black block tracking-wider">Live Match Score</span>
+                <span className="text-3xl font-black text-white block mt-1">{match.homeScore} — {match.awayScore}</span>
               </div>
             ) : (
-              <div className="text-center bg-zinc-900/40 border border-zinc-800/80 px-5 py-3 rounded-2xl">
-                <span className="text-[10px] text-zinc-500 uppercase font-semibold block mb-0.5">Kickoff</span>
-                <span className="text-sm font-bold text-blue-400">
+              <div className="text-left sm:text-right">
+                <span className="text-[9px] text-zinc-500 uppercase font-black block tracking-wider">Scheduled Kickoff</span>
+                <span className="text-xs font-bold text-blue-400 block mt-1.5">
                   {new Date(match.startTime).toLocaleDateString()} at {new Date(match.startTime).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
                 </span>
               </div>
@@ -183,40 +179,40 @@ export default function MarketDetail({ match, markets, user, onBack, onTrade }: 
         </div>
       </div>
 
-      {/* Main Grid: Left column (Market options, timeline, commentary), Right column (Trading Panel) */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* 2. Main Grid: Left Column (Odds trajectory, commentary, prediction options), Right Column (Trade Desk sidebar) */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        {/* Left Column (2/3 of grid) */}
-        <div className="lg:col-span-2 space-y-6">
+        {/* Left Area (Prediction Options & Feed Timelines) */}
+        <div className="lg:col-span-2 space-y-10">
           
-          {/* Prediction Markets Selector Board */}
-          <div className="bg-zinc-900/20 border border-zinc-800 rounded-2xl p-5 space-y-4">
-            <h3 className="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2 border-b border-zinc-900 pb-3">
+          {/* Contracts Selector */}
+          <div className="space-y-4">
+            <h3 className="text-xs font-black text-zinc-400 uppercase tracking-widest flex items-center gap-2 border-b border-zinc-900 pb-2.5">
               <BarChart3 className="w-4 h-4 text-blue-400" />
-              <span>Prediction Contracts</span>
+              <span>Prediction Markets</span>
             </h3>
 
-            <div className="space-y-4">
+            <div className="divide-y divide-zinc-900">
               {markets.map(market => {
                 const isSelected = selectedMarket?.id === market.id;
                 return (
                   <div
                     key={market.id}
                     onClick={() => handleMarketChange(market)}
-                    className={`border rounded-xl p-4 transition-all duration-150 cursor-pointer ${isSelected ? 'bg-zinc-900/60 border-blue-500/50 shadow-lg' : 'bg-zinc-950/20 border-zinc-800/80 hover:border-zinc-700'}`}
+                    className={`py-5 transition-colors cursor-pointer ${isSelected ? 'bg-zinc-950/20' : ''}`}
                   >
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="text-sm font-bold text-zinc-100">{market.question}</h4>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <h4 className="text-sm font-extrabold text-white">{market.question}</h4>
                       {market.status === 'SETTLED' ? (
-                        <span className="text-[10px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-md font-bold uppercase tracking-wider">Settled</span>
+                        <span className="text-[8px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded font-black uppercase">Settled</span>
                       ) : (
-                        <span className="text-[10px] bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded-md font-bold uppercase tracking-wider">Active</span>
+                        <span className="text-[8px] bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded font-black uppercase">Active</span>
                       )}
                     </div>
-                    <p className="text-xs text-zinc-400 mb-3 leading-relaxed">{market.description}</p>
+                    <p className="text-xs text-zinc-400 mb-4 font-medium leading-relaxed">{market.description}</p>
 
-                    {/* Outcomes Quick Grid */}
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {/* Options (Continuous columns) */}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                       {market.outcomes.map(out => {
                         const isOutcomeSelected = selectedMarket?.id === market.id && selectedOutcome?.id === out.id;
                         return (
@@ -229,18 +225,18 @@ export default function MarketDetail({ match, markets, user, onBack, onTrade }: 
                               setTradeError('');
                               setTradeSuccess(false);
                             }}
-                            className={`px-3 py-2 rounded-lg border text-center transition-colors cursor-pointer ${isOutcomeSelected ? 'bg-blue-600/15 border-blue-500 text-blue-400' : 'bg-zinc-950/60 border-zinc-900 hover:border-zinc-800 text-zinc-300'}`}
+                            className={`px-3 py-2.5 rounded-xl border text-center transition-all cursor-pointer ${isOutcomeSelected ? 'bg-blue-600/10 border-blue-500 text-blue-400' : 'bg-transparent border-zinc-900 text-zinc-400 hover:text-white hover:border-zinc-800'}`}
                           >
-                            <span className="text-xs font-bold block truncate">{out.name}</span>
-                            <div className="flex items-center justify-center gap-1.5 mt-0.5">
+                            <span className="text-[11px] font-extrabold block truncate">{out.name}</span>
+                            <div className="flex items-center justify-center gap-1.5 mt-1">
                               {out.resolved && out.isWinner ? (
-                                <span className="text-xs font-black text-emerald-400">WIN $1.00</span>
+                                <span className="text-xs font-black text-emerald-400">WON $1.00</span>
                               ) : out.resolved && !out.isWinner ? (
                                 <span className="text-xs font-black text-zinc-600">$0.00</span>
                               ) : (
                                 <>
                                   <span className="text-xs font-black text-white">${out.odds.toFixed(2)}</span>
-                                  <span className="text-[10px] text-zinc-500">({Math.round(out.probability * 100)}%)</span>
+                                  <span className="text-[9px] text-zinc-500 font-bold">({Math.round(out.probability * 100)}%)</span>
                                 </>
                               )}
                             </div>
@@ -254,44 +250,37 @@ export default function MarketDetail({ match, markets, user, onBack, onTrade }: 
             </div>
           </div>
 
-          {/* Custom SVG Odds Movement Chart */}
-          <div className="bg-zinc-900/20 border border-zinc-800 rounded-2xl p-5 space-y-4">
-            <h3 className="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2 border-b border-zinc-900 pb-3">
+          {/* SVG Trajectory Ticker - Completely borderless inside space */}
+          <div className="space-y-4">
+            <h3 className="text-xs font-black text-zinc-400 uppercase tracking-widest flex items-center gap-2 border-b border-zinc-900 pb-2.5">
               <TrendingUp className="w-4 h-4 text-emerald-400" />
-              <span>Odds Trajectory Tracker</span>
+              <span>Trajectory Chart</span>
             </h3>
 
-            {/* SVG Render */}
-            <div className="relative bg-zinc-950/60 border border-zinc-900 p-4 rounded-xl flex flex-col items-center justify-center min-h-[160px]">
-              {selectedMarket ? (
-                <div className="w-full">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-xs text-zinc-500 font-bold">{selectedMarket.question}</span>
-                    <span className="text-[10px] text-zinc-400 flex items-center gap-1">
-                      <Clock className="w-3 h-3 text-zinc-400 animate-spin" /> Live SSE updates active
-                    </span>
-                  </div>
+            {selectedMarket ? (
+              <div className="space-y-3">
+                <div className="flex justify-between items-center text-[10px] text-zinc-500 font-bold">
+                  <span>{selectedMarket.question}</span>
+                  <span className="flex items-center gap-1">
+                    <Clock className="w-3 h-3 text-zinc-500" /> Consensus feed stream
+                  </span>
+                </div>
 
-                  {/* Simulated interactive Area chart using beautiful SVG lines */}
+                <div className="bg-zinc-950/40 p-4 rounded-2xl border border-zinc-900/60">
                   <svg viewBox="0 0 400 120" className="w-full h-28 overflow-visible">
                     <defs>
                       <linearGradient id="gradientHome" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.4" />
+                        <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.25" />
                         <stop offset="100%" stopColor="#3b82f6" stopOpacity="0" />
-                      </linearGradient>
-                      <linearGradient id="gradientAway" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#818cf8" stopOpacity="0.3" />
-                        <stop offset="100%" stopColor="#818cf8" stopOpacity="0" />
                       </linearGradient>
                     </defs>
 
                     {/* Grid lines */}
-                    <line x1="0" y1="20" x2="400" y2="20" stroke="#1f2937" strokeWidth="0.5" strokeDasharray="2" />
-                    <line x1="0" y1="60" x2="400" y2="60" stroke="#1f2937" strokeWidth="0.5" strokeDasharray="2" />
-                    <line x1="0" y1="100" x2="400" y2="100" stroke="#1f2937" strokeWidth="0.5" strokeDasharray="2" />
+                    <line x1="0" y1="20" x2="400" y2="20" stroke="#18181b" strokeWidth="1" />
+                    <line x1="0" y1="60" x2="400" y2="60" stroke="#18181b" strokeWidth="1" />
+                    <line x1="0" y1="100" x2="400" y2="100" stroke="#18181b" strokeWidth="1" />
 
-                    {/* Dynamic graphs based on selected outcomes or live events */}
-                    {/* Outcome 1 (Home) */}
+                    {/* Interactive Curve */}
                     <path
                       d="M 0,90 Q 50,85 100,70 T 200,80 T 300,55 T 400,30"
                       fill="none"
@@ -303,67 +292,56 @@ export default function MarketDetail({ match, markets, user, onBack, onTrade }: 
                       fill="url(#gradientHome)"
                     />
 
-                    {/* Outcome 2 (Away) */}
-                    <path
-                      d="M 0,60 Q 50,70 100,80 T 200,65 T 300,85 T 400,105"
-                      fill="none"
-                      stroke="#818cf8"
-                      strokeWidth="1.5"
-                      strokeDasharray="1"
-                    />
-
-                    {/* Chart cursors/hotspots */}
-                    <circle cx="400" cy="30" r="4" fill="#3b82f6" stroke="#ffffff" strokeWidth="1" />
-                    <circle cx="400" cy="105" r="3" fill="#818cf8" stroke="#ffffff" strokeWidth="1" />
+                    {/* Highlights */}
+                    <circle cx="400" cy="30" r="4.5" fill="#3b82f6" stroke="#ffffff" strokeWidth="1.5" />
                   </svg>
 
-                  <div className="flex items-center justify-between text-[10px] text-zinc-500 font-bold mt-2">
+                  <div className="flex items-center justify-between text-[10px] text-zinc-600 font-black uppercase tracking-wider mt-2 px-1">
                     <span>Kick-off</span>
                     <span>30'</span>
                     <span>Half-time</span>
                     <span>75'</span>
-                    <span>Full-time</span>
+                    <span>FT</span>
                   </div>
                 </div>
-              ) : (
-                <span className="text-xs text-zinc-500">No market data selected</span>
-              )}
-            </div>
+              </div>
+            ) : (
+              <p className="text-xs text-zinc-500 font-medium">No trajectory available</p>
+            )}
           </div>
 
-          {/* Match events timeline */}
-          <div className="bg-zinc-900/20 border border-zinc-800 rounded-2xl p-5 space-y-4">
-            <h3 className="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2 border-b border-zinc-900 pb-3">
+          {/* Timeline Feed - organic vertical stream */}
+          <div className="space-y-4">
+            <h3 className="text-xs font-black text-zinc-400 uppercase tracking-widest flex items-center gap-2 border-b border-zinc-900 pb-2.5">
               <Activity className="w-4 h-4 text-amber-500" />
-              <span>TxLINE Sports Feed Timeline</span>
+              <span>sports feed timeline</span>
             </h3>
 
             {match.events.length === 0 ? (
-              <div className="text-center py-6">
-                <p className="text-xs text-zinc-500">Waiting for live match kick-off log sequences...</p>
+              <div className="py-8 text-center border-t border-b border-zinc-900/40">
+                <p className="text-xs text-zinc-500 font-medium">Fixture has not kicked off yet.</p>
               </div>
             ) : (
-              <div className="space-y-4 relative pl-4 border-l border-zinc-800">
+              <div className="space-y-5 pl-4 border-l border-zinc-900 relative">
                 {match.events.slice().reverse().map(event => (
                   <div key={event.id} className="relative">
-                    {/* Timestamp Dot */}
-                    <span className="absolute -left-[21px] top-1.5 w-2.5 h-2.5 rounded-full bg-zinc-900 border border-zinc-700 flex items-center justify-center">
-                      <span className={`w-1 h-1 rounded-full ${event.type === 'GOAL' ? 'bg-emerald-400' : 'bg-zinc-400'}`}></span>
+                    <span className="absolute -left-[21px] top-1.5 w-2 h-2 rounded-full bg-zinc-950 border border-zinc-800 flex items-center justify-center">
+                      <span className={`w-1 h-1 rounded-full ${event.type === 'GOAL' ? 'bg-emerald-400' : 'bg-zinc-600'}`}></span>
                     </span>
 
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-mono font-black text-zinc-400">{event.minute}'</span>
+                        <span className="text-xs font-mono font-black text-zinc-500">{event.minute}'</span>
                         <span className={`text-xs font-extrabold ${event.type === 'GOAL' ? 'text-emerald-400' : 'text-zinc-200'}`}>
-                          {event.type === 'GOAL' ? '⚽ Goal Scored!' : (event.type === 'YELLOW_CARD' ? '🟨 Yellow Card' : event.player)}
+                          {event.type === 'GOAL' ? '⚽ Goal Scored!' : event.type}
                         </span>
                         {event.team && (
-                          <span className="text-[9px] bg-zinc-950 text-zinc-500 px-1 py-0.2 rounded border border-zinc-900 uppercase font-bold">
+                          <span className="text-[8px] bg-zinc-950 text-zinc-500 px-1 py-0.2 rounded border border-zinc-900 uppercase font-bold">
                             {event.team}
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-zinc-400 mt-0.5">
+                      <p className="text-xs text-zinc-400 mt-0.5 font-medium">
                         {event.player} {event.detail && <span className="text-zinc-500">({event.detail})</span>}
                       </p>
                     </div>
@@ -373,68 +351,65 @@ export default function MarketDetail({ match, markets, user, onBack, onTrade }: 
             )}
           </div>
 
-          {/* Gemini Smart Previews Panel */}
-          <div className="bg-gradient-to-br from-zinc-950 to-blue-950/20 border border-zinc-800 rounded-2xl p-5 space-y-4">
-            <div className="flex items-center justify-between border-b border-zinc-900 pb-3">
-              <h3 className="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2">
+          {/* Gemini Smart Assistant */}
+          <div className="space-y-4 pt-4 border-t border-zinc-900/40">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xs font-black text-zinc-400 uppercase tracking-widest flex items-center gap-2">
                 <Cpu className="w-4 h-4 text-violet-400" />
-                <span>Gemini Analytical Assistant</span>
+                <span>Gemini Analysis</span>
               </h3>
               <button
                 onClick={runGeminiAnalysis}
                 disabled={loadingGemini}
-                className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider bg-violet-600/10 border border-violet-500/20 hover:border-violet-500/50 text-violet-400 px-3 py-1.5 rounded-xl cursor-pointer disabled:opacity-50 hover:bg-violet-600/20 transition-all active:scale-95"
+                className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider bg-violet-600/10 border border-violet-500/20 hover:border-violet-500/50 text-violet-400 px-3 py-1.5 rounded-xl cursor-pointer disabled:opacity-50 hover:bg-violet-600/20 transition-all active:scale-95 h-8"
               >
-                <Sparkles className="w-3.5 h-3.5 animate-pulse" />
-                <span>{loadingGemini ? 'Running Model...' : 'Analyze Market'}</span>
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>{loadingGemini ? 'Running...' : 'Generate AI Report'}</span>
               </button>
             </div>
 
             {loadingGemini ? (
               <div className="space-y-2 py-4 animate-pulse">
-                <div className="h-3 bg-zinc-800 rounded w-1/3"></div>
-                <div className="h-3 bg-zinc-800 rounded w-4/5"></div>
-                <div className="h-3 bg-zinc-800 rounded w-2/3"></div>
+                <div className="h-3 bg-zinc-900 rounded w-1/4"></div>
+                <div className="h-3 bg-zinc-900 rounded w-3/4"></div>
+                <div className="h-3 bg-zinc-900 rounded w-1/2"></div>
               </div>
             ) : geminiAnalysis ? (
-              <div className="text-xs text-zinc-300 leading-relaxed bg-zinc-950/40 border border-zinc-900 p-4 rounded-xl prose prose-invert max-w-none">
-                <div className="whitespace-pre-line">{geminiAnalysis}</div>
+              <div className="text-xs text-zinc-300 leading-relaxed bg-zinc-950/40 border border-zinc-900 px-4 py-3 rounded-2xl whitespace-pre-line font-medium">
+                {geminiAnalysis}
               </div>
             ) : (
-              <p className="text-xs text-zinc-400 leading-relaxed">
-                Click "Analyze Market" to generate automated pre-match analysis, probability estimates, and sports-finance commentaries using Gemini's latest 3.5 models.
+              <p className="text-xs text-zinc-500 leading-relaxed font-medium">
+                Click "Generate AI Report" to query Gemini server-side predictions, match projections, and probability odds evaluations.
               </p>
             )}
           </div>
 
         </div>
 
-        {/* Right Column: Interactive Trading Desk (1/3 of grid) */}
+        {/* Right Area: Interactive Trading Desk - Borderless, clean form sidebar */}
         <div className="space-y-6">
-          
-          {/* Order Board Card */}
-          <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-5 space-y-5 shadow-2xl relative sticky top-6">
+          <div className="space-y-5 lg:sticky lg:top-24">
             
-            <div className="flex items-center justify-between border-b border-zinc-900 pb-3">
-              <h3 className="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2">
+            <div className="border-b border-zinc-900 pb-3">
+              <h3 className="text-xs font-black text-zinc-400 uppercase tracking-widest flex items-center gap-2">
                 <ShoppingBag className="w-4 h-4 text-blue-400" />
-                <span>Trade Shares Desk</span>
+                <span>Trading Desk</span>
               </h3>
-              <span className="text-[10px] text-zinc-500 font-bold">AMM Instantly Priced</span>
             </div>
 
             {selectedOutcome ? (
-              <form onSubmit={handleConfirmTrade} className="space-y-4">
+              <form onSubmit={handleConfirmTrade} className="space-y-5">
                 
-                {/* Buy / Sell toggle bar */}
-                <div className="grid grid-cols-2 gap-1 bg-zinc-900 p-1 rounded-xl border border-zinc-800/80">
+                {/* Buy / Sell switch */}
+                <div className="grid grid-cols-2 gap-2">
                   <button
                     type="button"
                     onClick={() => {
                       setTradeType('BUY');
                       setTradeError('');
                     }}
-                    className={`py-2 rounded-lg font-bold text-xs uppercase tracking-wider cursor-pointer transition-colors ${tradeType === 'BUY' ? 'bg-blue-600 text-white shadow-lg' : 'text-zinc-400 hover:text-white'}`}
+                    className={`py-2 rounded-xl font-black text-[10px] uppercase tracking-wider cursor-pointer transition-colors border ${tradeType === 'BUY' ? 'bg-blue-600 border-blue-500 text-white' : 'bg-transparent border-zinc-900 text-zinc-500 hover:text-white'}`}
                   >
                     Buy shares
                   </button>
@@ -444,25 +419,25 @@ export default function MarketDetail({ match, markets, user, onBack, onTrade }: 
                       setTradeType('SELL');
                       setTradeError('');
                     }}
-                    className={`py-2 rounded-lg font-bold text-xs uppercase tracking-wider cursor-pointer transition-colors ${tradeType === 'SELL' ? 'bg-zinc-800 text-red-400 shadow-lg' : 'text-zinc-400 hover:text-white'}`}
+                    className={`py-2 rounded-xl font-black text-[10px] uppercase tracking-wider cursor-pointer transition-colors border ${tradeType === 'SELL' ? 'bg-zinc-900 border-zinc-800 text-red-400' : 'bg-transparent border-zinc-900 text-zinc-500 hover:text-white'}`}
                   >
                     Sell shares
                   </button>
                 </div>
 
-                {/* Outcome display summary */}
-                <div className="bg-zinc-900/40 p-3.5 border border-zinc-900 rounded-xl space-y-1">
-                  <span className="text-[10px] text-zinc-500 font-bold uppercase block">Selected Prediction Contract</span>
-                  <span className="text-xs text-zinc-200 font-extrabold block">{selectedMarket?.question}</span>
-                  <div className="flex items-center justify-between mt-2 pt-2 border-t border-zinc-900">
-                    <span className="text-sm font-bold text-white">{selectedOutcome.name}</span>
-                    <span className="text-base font-black text-blue-400">${selectedOutcome.odds.toFixed(2)}</span>
+                {/* Outcome summary text */}
+                <div className="bg-zinc-950/40 px-3.5 py-3 rounded-2xl border border-zinc-900/80 space-y-1">
+                  <span className="text-[9px] text-zinc-500 font-black uppercase tracking-wider block">Target Position</span>
+                  <span className="text-xs text-zinc-400 font-bold block">{selectedMarket?.question}</span>
+                  <div className="flex items-center justify-between mt-2 pt-2 border-t border-zinc-900/60">
+                    <span className="text-xs font-extrabold text-white">{selectedOutcome.name}</span>
+                    <span className="text-sm font-black text-blue-400">${selectedOutcome.odds.toFixed(2)}</span>
                   </div>
                 </div>
 
-                {/* Shares input form */}
+                {/* Shares quantity input */}
                 <div className="space-y-1.5">
-                  <label className="text-[10px] text-zinc-500 font-black uppercase block">Amount of Shares</label>
+                  <label className="text-[10px] text-zinc-500 font-black uppercase tracking-wider block">Quantity</label>
                   <div className="relative">
                     <input
                       type="number"
@@ -472,109 +447,103 @@ export default function MarketDetail({ match, markets, user, onBack, onTrade }: 
                       placeholder="100"
                       value={sharesInput}
                       onChange={(e) => setSharesInput(e.target.value)}
-                      className="w-full bg-zinc-900 border border-zinc-800 focus:border-blue-500 rounded-xl py-3 px-4 text-sm font-mono font-bold text-white outline-none placeholder-zinc-600"
+                      className="w-full bg-zinc-950 border border-zinc-900 focus:border-blue-500 rounded-xl py-2.5 px-3 text-xs font-mono font-bold text-white outline-none h-10"
                     />
-                    <span className="absolute right-4 top-3.5 text-xs text-zinc-500 font-bold uppercase">Shares</span>
+                    <span className="absolute right-3 top-3 text-[10px] text-zinc-500 font-black uppercase tracking-wider">Shares</span>
                   </div>
                 </div>
 
-                {/* User Active Holdings Indicator */}
+                {/* Holdings reminder */}
                 {userOutcomePosition && (
-                  <div className="bg-zinc-900/40 border border-zinc-800 px-3 py-2 rounded-xl flex items-center justify-between text-[11px]">
-                    <span className="text-zinc-500 font-medium">Your Active Position:</span>
-                    <span className="font-bold text-blue-400">
-                      {userOutcomePosition.shares} Shares (Avg: ${userOutcomePosition.avgPrice.toFixed(2)})
+                  <div className="bg-zinc-950/20 px-3.5 py-2 rounded-xl text-[10px] flex items-center justify-between">
+                    <span className="text-zinc-500 font-bold">Your Balance:</span>
+                    <span className="font-extrabold text-blue-400">
+                      {userOutcomePosition.shares} Shares (@ ${userOutcomePosition.avgPrice.toFixed(2)})
                     </span>
                   </div>
                 )}
 
-                {/* Financial Summary Calculation Grid */}
-                <div className="bg-zinc-900/20 border border-zinc-900 p-4 rounded-xl space-y-2.5 text-xs">
-                  <div className="flex items-center justify-between">
-                    <span className="text-zinc-500">Avg share cost</span>
-                    <span className="text-zinc-300 font-bold">${pricePerShare.toFixed(2)}</span>
+                {/* Order specs billing */}
+                <div className="space-y-2 text-xs py-1">
+                  <div className="flex items-center justify-between text-zinc-400 font-medium">
+                    <span>Target Price</span>
+                    <span className="font-bold text-zinc-300">${pricePerShare.toFixed(2)}</span>
                   </div>
-                  <div className="flex items-center justify-between border-b border-zinc-900 pb-2">
-                    <span className="text-zinc-500">Total volume</span>
-                    <span className="text-zinc-300 font-mono">{sharesValue.toLocaleString()}</span>
+                  <div className="flex items-center justify-between text-zinc-400 font-medium pb-2 border-b border-zinc-900/60">
+                    <span>Volume</span>
+                    <span className="font-mono font-bold text-zinc-300">{sharesValue.toLocaleString()}</span>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-zinc-500 font-semibold">{tradeType === 'BUY' ? 'USDC Cost' : 'USDC Return'}</span>
-                    <span className="text-sm font-bold text-emerald-400">${costEst.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                  <div className="flex items-center justify-between pt-1">
+                    <span className="text-zinc-400 font-bold">{tradeType === 'BUY' ? 'Estimated Cost' : 'Estimated Return'}</span>
+                    <span className="font-mono font-black text-sm text-emerald-400">${costEst.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                   </div>
 
                   {tradeType === 'BUY' && (
-                    <>
-                      <div className="flex items-center justify-between border-t border-zinc-900 pt-2 text-[11px]">
-                        <span className="text-zinc-500">Max Settle Value</span>
-                        <span className="text-zinc-300 font-bold">${maxPayout.toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
+                    <div className="pt-2 border-t border-zinc-900/60 space-y-1.5 text-[10px] text-zinc-500 font-medium">
+                      <div className="flex items-center justify-between">
+                        <span>Max Settle Value</span>
+                        <span className="font-bold text-zinc-400">${maxPayout.toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
                       </div>
-                      <div className="flex items-center justify-between text-[11px]">
-                        <span className="text-zinc-500">Est Profit</span>
-                        <span className="text-emerald-400 font-bold">+${profitEst.toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
+                      <div className="flex items-center justify-between">
+                        <span>Projected Earnings</span>
+                        <span className="text-emerald-500 font-bold">+${profitEst.toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
                       </div>
-                      <div className="flex items-center justify-between text-[11px]">
-                        <span className="text-zinc-500">Est ROI</span>
-                        <span className="text-emerald-400 font-bold">{roiEst.toFixed(1)}%</span>
-                      </div>
-                    </>
+                    </div>
                   )}
                 </div>
 
-                {/* Errors & Alerts */}
+                {/* Alerts */}
                 {tradeError && (
-                  <div className="bg-red-950/40 border border-red-900 text-red-400 p-3 rounded-xl text-xs flex items-start gap-2">
+                  <div className="bg-red-950/20 border border-red-900/30 text-red-400 p-3 rounded-xl text-xs flex items-start gap-2">
                     <AlertTriangle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
                     <span>{tradeError}</span>
                   </div>
                 )}
 
                 {tradeSuccess && (
-                  <div className="bg-emerald-950/40 border border-emerald-900 text-emerald-400 p-3 rounded-xl text-xs">
-                    🎉 Share trade executed successfully on the AMM!
+                  <div className="bg-emerald-950/20 border border-emerald-900/30 text-emerald-400 p-3 rounded-xl text-xs font-bold">
+                    🎉 Transaction executed successfully on AMM!
                   </div>
                 )}
 
-                {/* Order Submission Button */}
                 <button
                   type="submit"
                   disabled={isSubmitting || selectedMarket?.status === 'SETTLED' || !selectedOutcome}
-                  className="w-full bg-blue-600 hover:bg-blue-500 disabled:bg-zinc-800 disabled:text-zinc-500 text-white font-bold py-3.5 rounded-xl text-sm transition-colors duration-200 active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-black py-3 rounded-xl text-xs uppercase tracking-widest flex items-center justify-center gap-1.5 cursor-pointer h-11 transition-all shadow-md shadow-blue-600/15"
                 >
-                  <span>{selectedMarket?.status === 'SETTLED' ? 'Market Settled' : `${tradeType === 'BUY' ? 'Buy shares' : 'Sell shares'}`}</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <span>{selectedMarket?.status === 'SETTLED' ? 'Market Settled' : `${tradeType === 'BUY' ? 'Execute Buy' : 'Execute Sell'}`}</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </button>
 
               </form>
             ) : (
-              <p className="text-xs text-zinc-500 text-center py-6">Select an prediction option to begin order execution.</p>
+              <p className="text-xs text-zinc-500 text-center py-6">Select outcome to open desk</p>
             )}
 
-            {/* Platform Order Book Depth mockup */}
-            <div className="border-t border-zinc-900 pt-4 space-y-2.5">
-              <span className="text-[10px] text-zinc-500 font-black uppercase block">Liquidity Order Book Depth</span>
+            {/* Platform Book Depth (continuous borderless) */}
+            <div className="border-t border-zinc-900 pt-4 space-y-3">
+              <span className="text-[9px] text-zinc-500 font-black uppercase tracking-wider block">Consensus Liquidity Depth</span>
               
-              <div className="space-y-1.5 text-[10px]">
+              <div className="space-y-2 text-[10px]">
                 <div className="flex items-center justify-between text-zinc-400">
-                  <span>Buying Pool Yes</span>
-                  <span>95,210 Shares</span>
+                  <span>Buying Yes</span>
+                  <span className="font-mono">95,210 Contracts</span>
                 </div>
-                <div className="w-full bg-zinc-900 rounded-full h-1.5 overflow-hidden">
-                  <div className="bg-blue-500 h-1.5 rounded-full" style={{ width: '74%' }}></div>
+                <div className="w-full bg-zinc-950 rounded-full h-1 overflow-hidden">
+                  <div className="bg-blue-500 h-1 rounded-full" style={{ width: '74%' }}></div>
                 </div>
 
                 <div className="flex items-center justify-between text-zinc-400 mt-2">
-                  <span>Selling Pool No</span>
-                  <span>34,120 Shares</span>
+                  <span>Selling No</span>
+                  <span className="font-mono">34,120 Contracts</span>
                 </div>
-                <div className="w-full bg-zinc-900 rounded-full h-1.5 overflow-hidden">
-                  <div className="bg-indigo-400 h-1.5 rounded-full" style={{ width: '38%' }}></div>
+                <div className="w-full bg-zinc-950 rounded-full h-1 overflow-hidden">
+                  <div className="bg-indigo-500 h-1 rounded-full" style={{ width: '38%' }}></div>
                 </div>
               </div>
             </div>
 
           </div>
-          
         </div>
 
       </div>

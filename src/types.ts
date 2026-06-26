@@ -102,6 +102,7 @@ export interface UserProfile {
   email?: string;
   loginMethod: 'GOOGLE' | 'EMAIL' | 'WALLET' | null;
   walletAddress: string;
+  privateKey?: string;
   balance: number; // Simulated USDC
   portfolioValue: number;
   positions: UserPosition[];
