@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Trophy, ShieldAlert, BarChart3, User, Terminal, HelpCircle, Activity, LayoutGrid, Coins, AlertCircle } from 'lucide-react';
+import { usePrivy } from '@privy-io/react-auth';
 import { Match, PredictionMarket, SettlementProof, UserProfile, SystemFeedLog } from './types';
 
 // Subcomponents
@@ -9,11 +10,10 @@ import MarketDetail from './components/MarketDetail';
 import ResolutionCenter from './components/ResolutionCenter';
 import Analytics from './components/Analytics';
 import Profile from './components/Profile';
-import AdminPanel from './components/AdminPanel';
 
 export default function App() {
   // Navigation Routing States
-  const [activeTab, setActiveTab] = useState<'DASHBOARD' | 'RESOLUTION' | 'ANALYTICS' | 'PORTFOLIO' | 'ADMIN'>('DASHBOARD');
+  const [activeTab, setActiveTab] = useState<'DASHBOARD' | 'RESOLUTION' | 'ANALYTICS' | 'PORTFOLIO'>('DASHBOARD');
   const [selectedMatchId, setSelectedMatchId] = useState<string | null>(null);
 
   // App Data States
@@ -141,13 +141,62 @@ export default function App() {
     };
   }, [user, matches]);
 
-  // Auth logins via Privy Wallet simulation
+  const { ready: privyReady, authenticated: privyAuthenticated, user: privyUser, logout: privyLogout } = usePrivy();
+
+  // Privy-to-Backend Sync Effect
+  useEffect(() => {
+    if (!privyReady) return;
+
+    async function syncProfile() {
+      if (privyAuthenticated && privyUser) {
+        const walletAddress = privyUser.wallet?.address || 
+          privyUser.linkedAccounts?.find(a => a.type === 'wallet')?.address || 
+          `privy_${privyUser.id.replace('did:privy:', '').substring(0, 16)}`;
+        
+        const email = privyUser.email?.address || 
+          privyUser.google?.email || 
+          privyUser.linkedAccounts?.find(a => a.type === 'email')?.address || '';
+
+        const loginMethod = privyUser.google ? 'GOOGLE' : privyUser.email ? 'EMAIL' : 'WALLET';
+
+        try {
+          const response = await fetch('/api/profile/auth', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              walletAddress,
+              email,
+              loginMethod,
+            }),
+          });
+
+          if (response.ok) {
+            const profileData: UserProfile = await response.json();
+            setUser(profileData);
+            localStorage.setItem('goalmarket_wallet_address', walletAddress);
+          }
+        } catch (e) {
+          console.error('Failed syncing Privy user profile with backend API', e);
+        }
+      } else {
+        setUser(null);
+        localStorage.removeItem('goalmarket_wallet_address');
+      }
+    }
+
+    syncProfile();
+  }, [privyReady, privyAuthenticated, privyUser]);
+
+  // Fallback / simulation interface handler
   const handleLogin = (profile: UserProfile) => {
     setUser(profile);
     localStorage.setItem('goalmarket_wallet_address', profile.walletAddress);
   };
 
   const handleLogout = () => {
+    if (privyAuthenticated) {
+      privyLogout().catch(console.error);
+    }
     setUser(null);
     localStorage.removeItem('goalmarket_wallet_address');
   };
@@ -287,17 +336,6 @@ export default function App() {
               <User className="w-4 h-4" />
               <span>My Portfolio</span>
             </button>
-
-            <button
-              onClick={() => {
-                setActiveTab('ADMIN');
-                setSelectedMatchId(null);
-              }}
-              className={`w-full flex items-center gap-3 px-3.5 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition-colors cursor-pointer ${activeTab === 'ADMIN' ? 'bg-blue-600/10 text-blue-400' : 'text-zinc-400 hover:text-white'}`}
-            >
-              <Terminal className="w-4 h-4" />
-              <span>Oracle Admin</span>
-            </button>
           </nav>
 
         </div>
@@ -388,15 +426,6 @@ export default function App() {
           >
             Portfolio
           </button>
-          <button
-            onClick={() => {
-              setActiveTab('ADMIN');
-              setSelectedMatchId(null);
-            }}
-            className={`text-xs font-extrabold uppercase tracking-wider shrink-0 cursor-pointer ${activeTab === 'ADMIN' ? 'text-blue-400' : 'text-zinc-500'}`}
-          >
-            Admin
-          </button>
         </div>
 
         {/* Core Content Body */}
@@ -439,14 +468,6 @@ export default function App() {
                     const button = document.getElementById('btn-connect-wallet');
                     if (button) button.click();
                   }}
-                />
-              )}
-
-              {activeTab === 'ADMIN' && (
-                <AdminPanel
-                  matches={matches}
-                  logs={logs}
-                  onTriggerAction={handleAdminAction}
                 />
               )}
             </>

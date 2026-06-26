@@ -277,7 +277,7 @@ app.get('/api/logs', (req, res) => {
 
 // Privy authentication simulation
 app.post('/api/profile/auth', (req, res) => {
-  const { walletAddress, email, loginMethod } = req.body;
+  const { walletAddress, email, loginMethod, privateKey } = req.body;
   if (!walletAddress) return res.status(400).json({ error: 'walletAddress is required' });
 
   let profile = users[walletAddress];
@@ -287,6 +287,7 @@ app.post('/api/profile/auth', (req, res) => {
       email: email || '',
       loginMethod: loginMethod || 'WALLET',
       walletAddress,
+      privateKey: privateKey || '',
       balance: 100000, // Initial mock USDC
       portfolioValue: 0,
       positions: [],
@@ -300,7 +301,7 @@ app.post('/api/profile/auth', (req, res) => {
       id: `log_usr_${Date.now()}`,
       timestamp: new Date().toISOString(),
       type: 'INFO',
-      message: `New User Profile authenticated via Privy: ${walletAddress.slice(0, 10)}... assigned $100,000 USDC.`
+      message: `🆕 [DECENTRALIZED PRIVY AUTH] New User registered. Method: ${loginMethod || 'WALLET'}. Solana Address: ${walletAddress.slice(0, 10)}... Assigned testnet balance.`
     };
     systemLogs.push(log);
     broadcastSSE('LOG', log);
@@ -308,10 +309,33 @@ app.post('/api/profile/auth', (req, res) => {
     // If logging in, update login method
     if (loginMethod) profile.loginMethod = loginMethod;
     if (email) profile.email = email;
+    if (privateKey) profile.privateKey = privateKey;
   }
 
   // Recalculate portfolio value before return
   recalculatePortfolioValue(profile);
+  res.json(profile);
+});
+
+app.post('/api/profile/fund', (req, res) => {
+  const { walletAddress, amount } = req.body;
+  if (!walletAddress) return res.status(400).json({ error: 'walletAddress is required' });
+  const profile = users[walletAddress];
+  if (!profile) return res.status(404).json({ error: 'Profile not found' });
+
+  const claimAmount = Number(amount) || 500;
+  profile.balance += claimAmount;
+
+  // Log faucet claim
+  const log: SystemFeedLog = {
+    id: `log_faucet_${Date.now()}`,
+    timestamp: new Date().toISOString(),
+    type: 'INFO',
+    message: `🚰 [TESTNET FAUCET] Funded address ${walletAddress.slice(0, 8)}... with +$${claimAmount} USDC`
+  };
+  systemLogs.push(log);
+  broadcastSSE('LOG', log);
+
   res.json(profile);
 });
 
