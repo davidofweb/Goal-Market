@@ -1,0 +1,6 @@
+{
+  "name": "GoalMarket",
+  "description": "A decentralized-style World Cup prediction market powered by verifiable TxLINE sports feeds, featuring real-time SSE updates, embedded Solana wallets, and automated verifiable settlement proofs.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
